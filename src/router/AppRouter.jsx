@@ -15,11 +15,8 @@ import MainLayout from "../layouts/MainLayout";
 const AppRouter = () => {
   return (
     <BrowserRouter>
-
       <Routes>
-
         <Route path="/" element={<MainLayout />}>
-
           <Route index element={<Home />} />
 
           <Route
@@ -46,11 +43,8 @@ const AppRouter = () => {
             path="contact"
             element={<Contact />}
           />
-
         </Route>
-
       </Routes>
-
     </BrowserRouter>
   );
 };
