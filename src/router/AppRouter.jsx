@@ -4,12 +4,13 @@ import {
   Route,
 } from "react-router-dom";
 
-import { Contact, Home } from "lucide-react";
 import About from "../pages/About";
 import Services from "../pages/Services";
 import Tracking from "../pages/Tracking";
 import News from "../pages/News";
 import MainLayout from "../layouts/MainLayout";
+import Home from "../pages/Home";
+import Contact from "../pages/Contact";
 
 
 
