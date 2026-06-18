@@ -3,14 +3,14 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-
-import Home from "../pages/Home";
+import MainLayout from "../layouts/MainLayout";
+import { Contact, Home } from "lucide-react";
 import About from "../pages/About";
 import Services from "../pages/Services";
 import Tracking from "../pages/Tracking";
 import News from "../pages/News";
-import Contact from "../pages/Contact";
-import MainLayout from "../layouts/MainLayout";
+
+
 
 const AppRouter = () => {
   return (
