@@ -26,7 +26,6 @@ const News = () => {
   const categories = [
     { key: "all", label: "Tout" },
     { key: "actualite", label: "Actualités" },
-    { key: "article", label: "Articles" },
   ];
 
   return (

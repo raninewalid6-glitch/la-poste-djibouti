@@ -6,13 +6,10 @@ const API = "http://localhost:5000/api";
 
 const AuthModal = ({ onClose }) => {
   const { login } = useAuth();
-  const [tab, setTab] = useState("login");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
 
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -20,33 +17,22 @@ const AuthModal = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
-      const endpoint = tab === "login" ? "/auth/login" : "/auth/register";
-      const body =
-        tab === "login"
-          ? { email: form.email, password: form.password }
-          : { name: form.name, email: form.email, password: form.password };
-
-      const res = await fetch(`${API}${endpoint}`, {
+      const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Une erreur est survenue");
-      } else if (tab === "login") {
+        setError(data.message || "Email ou mot de passe incorrect");
+      } else {
         login(data.user, data.token);
         onClose();
-      } else {
-        setSuccess("Compte créé ! Vous pouvez maintenant vous connecter.");
-        setTab("login");
-        setForm({ name: "", email: "", password: "" });
       }
     } catch {
       setError("Impossible de contacter le serveur");
@@ -70,50 +56,13 @@ const AuthModal = ({ onClose }) => {
             <h2 className="text-white font-bold text-xl">Connexion</h2>
             <p className="text-gray-400 text-sm mt-0.5">La Poste de Djibouti</p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-white transition">
             <X size={22} />
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-gray-100">
-          {["login", "register"].map((t) => (
-            <button
-              key={t}
-              onClick={() => { setTab(t); setError(""); setSuccess(""); }}
-              className={`flex-1 py-3.5 text-sm font-semibold transition ${
-                tab === t
-                  ? "text-[#D4A017] border-b-2 border-[#D4A017]"
-                  : "text-gray-500 hover:text-[#0B1F3A]"
-              }`}
-            >
-              {t === "login" ? "Connexion" : "Inscription"}
-            </button>
-          ))}
-        </div>
-
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-8 py-7 space-y-4">
-          {tab === "register" && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Nom complet
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Votre nom"
-                required
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A017] focus:border-transparent transition"
-              />
-            </div>
-          )}
-
+        <form onSubmit={handleSubmit} className="px-8 py-8 space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Adresse email
@@ -158,31 +107,15 @@ const AuthModal = ({ onClose }) => {
               {error}
             </p>
           )}
-          {success && (
-            <p className="text-green-600 text-sm bg-green-50 rounded-lg px-4 py-2.5">
-              {success}
-            </p>
-          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#D4A017] hover:bg-yellow-600 disabled:opacity-60 text-[#0B1F3A] font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
+            className="w-full bg-[#D4A017] hover:bg-yellow-600 disabled:opacity-60 text-[#0B1F3A] font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2 mt-2"
           >
             {loading && <Loader2 size={17} className="animate-spin" />}
-            {tab === "login" ? "Se connecter" : "Créer mon compte"}
+            Se connecter
           </button>
-
-          <p className="text-center text-sm text-gray-500">
-            {tab === "login" ? "Pas encore de compte ? " : "Déjà inscrit ? "}
-            <button
-              type="button"
-              onClick={() => { setTab(tab === "login" ? "register" : "login"); setError(""); setSuccess(""); }}
-              className="text-[#D4A017] font-semibold hover:underline"
-            >
-              {tab === "login" ? "S'inscrire" : "Se connecter"}
-            </button>
-          </p>
         </form>
       </div>
     </div>
