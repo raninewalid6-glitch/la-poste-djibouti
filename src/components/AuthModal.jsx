@@ -67,7 +67,7 @@ const AuthModal = ({ onClose }) => {
         {/* Header */}
         <div className="bg-[#0B1F3A] px-8 py-6 flex items-center justify-between">
           <div>
-            <h2 className="text-white font-bold text-xl">Espace Client</h2>
+            <h2 className="text-white font-bold text-xl">Connexion</h2>
             <p className="text-gray-400 text-sm mt-0.5">La Poste de Djibouti</p>
           </div>
           <button
