@@ -92,7 +92,7 @@ const Navbar = () => {
                     </div>
                     {user.role === "admin" && (
                       <Link
-                        to="/admin"
+                        to="/portail-lpdj/administration"
                         onClick={() => setUserMenu(false)}
                         className="flex items-center gap-3 px-4 py-3 text-sm text-[#0B1F3A] hover:bg-gray-50 transition"
                       >
@@ -156,7 +156,7 @@ const Navbar = () => {
                 <>
                   {user.role === "admin" && (
                     <Link
-                      to="/admin"
+                      to="/portail-lpdj/administration"
                       onClick={() => setMobileMenu(false)}
                       className="flex items-center gap-2 text-sm font-medium text-[#0B1F3A]"
                     >

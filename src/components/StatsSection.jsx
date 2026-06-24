@@ -8,16 +8,11 @@ import {
 const stats = [
   {
     icon: <Landmark size={28} />,
-    number: "20+",
+    number: "11+",
     title: "Bureaux de poste",
     color: "text-[#D4A017]",
   },
-  {
-    icon: <Users size={28} />,
-    number: "500+",
-    title: "Employés engagés",
-    color: "text-[#0B1F3A]",
-  },
+ 
   {
     icon: <Package size={28} />,
     number: "1M+",

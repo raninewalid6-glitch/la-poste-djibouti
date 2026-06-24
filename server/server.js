@@ -7,6 +7,7 @@ const db = require("./config/db");
 const authRoutes = require("./routes/auth");
 const articleRoutes = require("./routes/articles");
 const trackingRoutes = require("./routes/tracking");
+const slideRoutes = require("./routes/slides");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
 app.use("/api/tracking", trackingRoutes);
+app.use("/api/slides", slideRoutes);
 
 app.get("/", (req, res) => {
   res.send("API La Poste Djibouti");

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
   Newspaper, PlusCircle, Trash2, Pencil, Loader2,
-  X, ImageIcon, LogOut, Home, ChevronRight, LayoutDashboard,
+  X, ImageIcon, LogOut, Home, ChevronRight, LayoutDashboard, Images, Upload, Film,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/images/logo.jpg";
@@ -15,6 +15,7 @@ const Sidebar = ({ active, setActive, onLogout, user }) => {
   const navItems = [
     { key: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
     { key: "actualites", label: "Actualités", icon: Newspaper },
+    { key: "diaporama", label: "Diaporama Hero", icon: Images },
   ];
 
   return (
@@ -72,14 +73,14 @@ const Sidebar = ({ active, setActive, onLogout, user }) => {
 };
 
 /* ─── Vue Tableau de bord (stats rapides) ─────────────────────────────── */
-const DashboardOverview = ({ articles, onNavigate }) => (
+const DashboardOverview = ({ articles, slideCount, onNavigate }) => (
   <div className="space-y-8">
     <div>
       <h1 className="text-2xl font-bold text-[#0B1F3A]">Tableau de bord</h1>
       <p className="text-gray-400 text-sm mt-1">Bienvenue dans l'espace d'administration.</p>
     </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5">
         <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center">
           <Newspaper size={24} className="text-blue-500" />
@@ -87,6 +88,16 @@ const DashboardOverview = ({ articles, onNavigate }) => (
         <div>
           <p className="text-3xl font-bold text-[#0B1F3A]">{articles.length}</p>
           <p className="text-gray-500 text-sm">Actualités publiées</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5">
+        <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center">
+          <Images size={24} className="text-purple-500" />
+        </div>
+        <div>
+          <p className="text-3xl font-bold text-[#0B1F3A]">{slideCount}</p>
+          <p className="text-gray-500 text-sm">Slides diaporama</p>
         </div>
       </div>
 
@@ -393,17 +404,257 @@ const ActualitesView = ({ articles, loading, token, onRefresh }) => {
   );
 };
 
+/* ─── Vue Diaporama Hero ──────────────────────────────────────────────── */
+const EMPTY_SLIDE_FORM = { title: "", subtitle: "", file: null };
+
+const DiaporamaView = ({ token }) => {
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState(EMPTY_SLIDE_FORM);
+  const [preview, setPreview] = useState(null);
+
+  const fetchSlides = async () => {
+    setLoading(true);
+    const res = await fetch(`${API}/slides`);
+    const data = await res.json();
+    setSlides(Array.isArray(data) ? data : []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchSlides(); }, []);
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "file") {
+      const file = files[0];
+      setForm((prev) => ({ ...prev, file }));
+      setPreview(file ? URL.createObjectURL(file) : null);
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const resetForm = () => {
+    setForm(EMPTY_SLIDE_FORM);
+    setPreview(null);
+    setShowForm(false);
+    setError("");
+    setSuccess("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.file) return setError("Veuillez choisir un fichier");
+    setError("");
+    setSuccess("");
+    setSubmitting(true);
+
+    const formData = new FormData();
+    formData.append("file", form.file);
+    if (form.title) formData.append("title", form.title);
+    if (form.subtitle) formData.append("subtitle", form.subtitle);
+
+    const res = await fetch(`${API}/slides`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message || "Erreur lors de l'upload");
+    } else {
+      setSuccess("Slide ajoutée !");
+      fetchSlides();
+      setTimeout(resetForm, 1500);
+    }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Supprimer cette slide ?")) return;
+    await fetch(`${API}/slides/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchSlides();
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#0B1F3A]">Diaporama Hero</h1>
+          <p className="text-gray-400 text-sm mt-1">
+            Slides affichées en rotation toutes les 3 s sur la page d'accueil
+          </p>
+        </div>
+        <button
+          onClick={() => setShowForm(true)}
+          className="flex items-center gap-2 bg-[#D4A017] hover:bg-yellow-600 text-[#0B1F3A] font-semibold px-5 py-2.5 rounded-xl transition"
+        >
+          <Upload size={18} />
+          Ajouter une slide
+        </button>
+      </div>
+
+      {/* Formulaire d'ajout */}
+      {showForm && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold text-[#0B1F3A]">Nouvelle slide</h2>
+            <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
+              <X size={20} />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Titre <span className="text-gray-400 font-normal">(optionnel)</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                placeholder="Ex : Rejoignez-nous à Djibouti"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A017]"
+              />
+              <p className="text-xs text-gray-400 mt-1">Laissez vide pour garder le texte par défaut</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Sous-titre <span className="text-gray-400 font-normal">(optionnel)</span>
+              </label>
+              <textarea
+                name="subtitle"
+                value={form.subtitle}
+                onChange={handleChange}
+                rows={2}
+                placeholder="Ex : Découvrez nos nouvelles agences à travers le pays."
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A017] resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Fichier <span className="text-red-400">*</span>
+              </label>
+              <label className="flex items-center gap-3 border-2 border-dashed border-gray-200 rounded-xl px-4 py-4 cursor-pointer hover:border-[#D4A017] transition">
+                <ImageIcon size={20} className="text-gray-400 flex-shrink-0" />
+                <span className="text-sm text-gray-500 truncate">
+                  {form.file ? form.file.name : "Image ou vidéo (JPG, PNG, MP4, WebM)"}
+                </span>
+                <input
+                  type="file"
+                  name="file"
+                  accept="image/*,video/mp4,video/webm"
+                  onChange={handleChange}
+                  className="hidden"
+                />
+              </label>
+              {preview && form.file?.type.startsWith("image") && (
+                <img src={preview} alt="Aperçu" className="mt-3 w-full h-48 object-cover rounded-xl" />
+              )}
+              {preview && form.file?.type.startsWith("video") && (
+                <video src={preview} muted className="mt-3 w-full h-48 object-cover rounded-xl" />
+              )}
+            </div>
+
+            {error && <p className="text-red-500 text-sm bg-red-50 rounded-lg px-4 py-2.5">{error}</p>}
+            {success && <p className="text-green-600 text-sm bg-green-50 rounded-lg px-4 py-2.5">{success}</p>}
+
+            <div className="flex gap-3 pt-1">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex items-center gap-2 bg-[#D4A017] hover:bg-yellow-600 disabled:opacity-60 text-[#0B1F3A] font-semibold px-6 py-3 rounded-xl transition"
+              >
+                {submitting && <Loader2 size={16} className="animate-spin" />}
+                Ajouter
+              </button>
+              <button
+                type="button"
+                onClick={resetForm}
+                className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition text-sm"
+              >
+                Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Liste des slides */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <Loader2 size={30} className="animate-spin text-[#D4A017]" />
+          </div>
+        ) : slides.length === 0 ? (
+          <div className="text-center py-16">
+            <Images size={40} className="text-gray-200 mx-auto mb-3" />
+            <p className="text-gray-400 text-sm">Aucune slide ajoutée</p>
+            <p className="text-gray-300 text-xs mt-1">L'image Hero par défaut sera affichée</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {slides.map((s, i) => (
+              <li key={s.id} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition">
+                <span className="text-xs font-bold text-gray-300 w-5 text-center flex-shrink-0">{i + 1}</span>
+
+                {s.type === "video" ? (
+                  <div className="w-24 h-16 rounded-xl bg-[#0B1F3A] flex items-center justify-center flex-shrink-0">
+                    <Film size={22} className="text-[#D4A017]" />
+                  </div>
+                ) : (
+                  <img
+                    src={`http://localhost:5000${s.url}`}
+                    alt={`Slide ${i + 1}`}
+                    className="w-24 h-16 rounded-xl object-cover flex-shrink-0"
+                  />
+                )}
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-[#0B1F3A] text-sm truncate">
+                    {s.title || <span className="text-gray-400 font-normal italic">Titre par défaut</span>}
+                  </p>
+                  {s.subtitle && (
+                    <p className="text-xs text-gray-400 truncate mt-0.5">{s.subtitle}</p>
+                  )}
+                  <p className="text-xs text-gray-300 mt-0.5">
+                    {s.type === "video" ? "Vidéo" : "Image"} · {new Date(s.created_at).toLocaleDateString("fr-FR")}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => handleDelete(s.id)}
+                  className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition flex-shrink-0"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
 /* ─── Page principale ─────────────────────────────────────────────────── */
 const AdminDashboard = () => {
   const { user, token, logout } = useAuth();
-  const navigate = useNavigate();
   const [active, setActive] = useState("dashboard");
   const [articles, setArticles] = useState([]);
+  const [slideCount, setSlideCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!user || user.role !== "admin") navigate("/");
-  }, [user, navigate]);
 
   const fetchArticles = async () => {
     setLoading(true);
@@ -413,9 +664,15 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchArticles(); }, []);
+  const fetchSlideCount = async () => {
+    const res = await fetch(`${API}/slides`);
+    const data = await res.json();
+    setSlideCount(Array.isArray(data) ? data.length : 0);
+  };
 
-  const handleLogout = () => { logout(); navigate("/"); };
+  useEffect(() => { fetchArticles(); fetchSlideCount(); }, []);
+
+  const handleLogout = () => logout();
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -430,6 +687,7 @@ const AdminDashboard = () => {
         {active === "dashboard" && (
           <DashboardOverview
             articles={articles}
+            slideCount={slideCount}
             onNavigate={setActive}
           />
         )}
@@ -440,6 +698,9 @@ const AdminDashboard = () => {
             token={token}
             onRefresh={fetchArticles}
           />
+        )}
+        {active === "diaporama" && (
+          <DiaporamaView token={token} />
         )}
       </main>
     </div>
