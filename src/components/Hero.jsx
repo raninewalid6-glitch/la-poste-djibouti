@@ -118,7 +118,7 @@ const Hero = () => {
               {subtitle}
             </p>
 
-            <div className="flex flex-wrap gap-4 mt-10">
+            <div className="flex flex-wrap gap-4 mt-16">
               <Link
                 to="/tracking"
                 className="flex items-center gap-2 bg-[#D4A017] hover:bg-yellow-600 transition px-7 py-4 rounded-full font-semibold text-[#0B1F3A] text-base"

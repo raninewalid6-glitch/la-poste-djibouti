@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Search, User, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Search, User, Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/images/logo.jpg";
 import AuthModal from "./AuthModal";
-import { useAuth } from "../context/AuthContext";
 
 const navLinks = [
   { to: "/", label: "Accueil" },
@@ -16,18 +15,9 @@ const navLinks = [
 const Navbar = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [userMenu, setUserMenu] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
 
   const isActive = (path) => location.pathname === path;
-
-  const handleLogout = () => {
-    logout();
-    setUserMenu(false);
-    navigate("/");
-  };
 
   return (
     <>
@@ -73,52 +63,14 @@ const Navbar = () => {
               <Search size={20} className="text-[#0B1F3A]" />
             </button>
 
-            {/* CLIENT SPACE — connecté ou non */}
-            {user ? (
-              <div className="relative hidden md:block">
-                <button
-                  onClick={() => setUserMenu(!userMenu)}
-                  className="flex bg-[#0B1F3A] hover:bg-[#162e57] transition px-5 py-3 rounded-full items-center gap-2 font-medium text-white"
-                >
-                  <User size={18} />
-                  {user.name.split(" ")[0]}
-                </button>
-
-                {userMenu && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="font-semibold text-[#0B1F3A] text-sm">{user.name}</p>
-                      <p className="text-xs text-gray-400">{user.email}</p>
-                    </div>
-                    {user.role === "admin" && (
-                      <Link
-                        to="/portail-lpdj/administration"
-                        onClick={() => setUserMenu(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-[#0B1F3A] hover:bg-gray-50 transition"
-                      >
-                        <LayoutDashboard size={16} />
-                        Dashboard admin
-                      </Link>
-                    )}
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowModal(true)}
-                className="hidden md:flex bg-[#D4A017] hover:bg-yellow-600 transition px-5 py-3 rounded-full items-center gap-2 font-medium text-[#0B1F3A]"
-              >
-                <User size={18} />
-                Espace client
-              </button>
-            )}
+            {/* CLIENT SPACE */}
+            <button
+              onClick={() => setShowModal(true)}
+              className="hidden md:flex bg-[#D4A017] hover:bg-yellow-600 transition px-5 py-3 rounded-full items-center gap-2 font-medium text-[#0B1F3A]"
+            >
+              <User size={18} />
+              Espace client
+            </button>
 
             {/* MOBILE MENU BUTTON */}
             <button
@@ -152,35 +104,13 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {user ? (
-                <>
-                  {user.role === "admin" && (
-                    <Link
-                      to="/portail-lpdj/administration"
-                      onClick={() => setMobileMenu(false)}
-                      className="flex items-center gap-2 text-sm font-medium text-[#0B1F3A]"
-                    >
-                      <LayoutDashboard size={16} />
-                      Dashboard admin
-                    </Link>
-                  )}
-                  <button
-                    onClick={() => { handleLogout(); setMobileMenu(false); }}
-                    className="mt-2 flex items-center gap-2 text-sm font-medium text-red-500"
-                  >
-                    <LogOut size={16} />
-                    Se déconnecter
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => { setShowModal(true); setMobileMenu(false); }}
-                  className="mt-4 bg-[#D4A017] hover:bg-yellow-600 transition px-5 py-4 rounded-2xl flex items-center justify-center gap-2 font-medium text-[#0B1F3A]"
-                >
-                  <User size={18} />
-                  Espace client
-                </button>
-              )}
+              <button
+                onClick={() => { setShowModal(true); setMobileMenu(false); }}
+                className="mt-4 bg-[#D4A017] hover:bg-yellow-600 transition px-5 py-4 rounded-2xl flex items-center justify-center gap-2 font-medium text-[#0B1F3A]"
+              >
+                <User size={18} />
+                Espace client
+              </button>
             </nav>
           </div>
         )}
