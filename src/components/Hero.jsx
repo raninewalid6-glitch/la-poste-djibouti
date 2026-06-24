@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Package, ArrowRight } from "lucide-react";
+import { Package, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/images/Hero.jpg";
 
 const API = "http://localhost:5000";
-const INTERVAL = 15000;
+const INTERVAL = 10000;
 
 const DEFAULT_TITLE = "Connecter les citoyens,\nservir le pays.";
 const DEFAULT_SUBTITLE = "Leader des services postaux et de proximité, nous facilitons vos échanges au quotidien.";
@@ -136,6 +136,26 @@ const Hero = () => {
             </div>
           </div>
         </div>
+
+        {/* ── Chevrons gauche / droite ── */}
+        {slides.length > 1 && (
+          <>
+            <button
+              onClick={() => goTo((current - 1 + slides.length) % slides.length)}
+              aria-label="Slide précédente"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white transition backdrop-blur-sm"
+            >
+              <ChevronLeft size={22} strokeWidth={2} />
+            </button>
+            <button
+              onClick={() => goTo((current + 1) % slides.length)}
+              aria-label="Slide suivante"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white transition backdrop-blur-sm"
+            >
+              <ChevronRight size={22} strokeWidth={2} />
+            </button>
+          </>
+        )}
 
         {/* ── Points de navigation ── */}
         {slides.length > 1 && (
