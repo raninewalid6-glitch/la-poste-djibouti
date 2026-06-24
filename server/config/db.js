@@ -1,19 +1,12 @@
-const mysql = require("mysql2");
+const { Pool } = require("pg");
 
-const db = mysql.createConnection({
-  host: "127.0.0.1",
-  port: 3306,
-  user: "root",
-  password: "",
-  database: "laposte_db",
+const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
 
-db.connect((err) => {
-  if (err) {
-    console.log("Database error:", err);
-  } else {
-    console.log("MySQL Connected");
-  }
-});
+db.connect()
+  .then(() => console.log("PostgreSQL (Neon) Connected"))
+  .catch((err) => console.error("Database error:", err));
 
 module.exports = db;

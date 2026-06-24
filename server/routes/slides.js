@@ -21,10 +21,14 @@ const upload = multer({
 
 // GET toutes les slides (public)
 router.get("/", async (req, res) => {
-  const [rows] = await db.promise().query(
-    "SELECT * FROM hero_slides ORDER BY position ASC, created_at ASC"
-  );
-  res.json(rows);
+  try {
+    const result = await db.query(
+      "SELECT * FROM hero_slides ORDER BY position ASC, created_at ASC"
+    );
+    res.json(result.rows);
+  } catch {
+    res.json([]);
+  }
 });
 
 // POST ajouter une slide (admin)
@@ -35,11 +39,11 @@ router.post("/", verifyAdmin, upload.single("file"), async (req, res) => {
   const url = `/uploads/${req.file.filename}`;
   const { title, subtitle } = req.body;
 
-  const [count] = await db.promise().query("SELECT COUNT(*) AS n FROM hero_slides");
-  const position = count[0].n;
+  const count = await db.query("SELECT COUNT(*) AS n FROM hero_slides");
+  const position = parseInt(count.rows[0].n, 10);
 
-  await db.promise().query(
-    "INSERT INTO hero_slides (type, url, title, subtitle, position) VALUES (?, ?, ?, ?, ?)",
+  await db.query(
+    "INSERT INTO hero_slides (type, url, title, subtitle, position) VALUES ($1, $2, $3, $4, $5)",
     [type, url, title || null, subtitle || null, position]
   );
 
@@ -48,7 +52,7 @@ router.post("/", verifyAdmin, upload.single("file"), async (req, res) => {
 
 // DELETE supprimer une slide (admin)
 router.delete("/:id", verifyAdmin, async (req, res) => {
-  await db.promise().query("DELETE FROM hero_slides WHERE id = ?", [req.params.id]);
+  await db.query("DELETE FROM hero_slides WHERE id = $1", [req.params.id]);
   res.json({ message: "Slide supprimée" });
 });
 

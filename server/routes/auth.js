@@ -12,18 +12,13 @@ router.post("/register", async (req, res) => {
   if (!name || !email || !password)
     return res.status(400).json({ message: "Tous les champs sont requis" });
 
-  const [existing] = await db.promise().query(
-    "SELECT id FROM users WHERE email = ?",
-    [email]
-  );
-
-  if (existing.length > 0)
+  const existing = await db.query("SELECT id FROM users WHERE email = $1", [email]);
+  if (existing.rows.length > 0)
     return res.status(409).json({ message: "Email déjà utilisé" });
 
   const hashed = await bcrypt.hash(password, 10);
-
-  await db.promise().query(
-    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+  await db.query(
+    "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
     [name, email, hashed]
   );
 
@@ -37,17 +32,12 @@ router.post("/login", async (req, res) => {
   if (!email || !password)
     return res.status(400).json({ message: "Email et mot de passe requis" });
 
-  const [rows] = await db.promise().query(
-    "SELECT * FROM users WHERE email = ?",
-    [email]
-  );
-
-  if (rows.length === 0)
+  const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+  if (result.rows.length === 0)
     return res.status(401).json({ message: "Email ou mot de passe incorrect" });
 
-  const user = rows[0];
+  const user = result.rows[0];
   const match = await bcrypt.compare(password, user.password);
-
   if (!match)
     return res.status(401).json({ message: "Email ou mot de passe incorrect" });
 

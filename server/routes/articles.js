@@ -16,22 +16,25 @@ const upload = multer({ storage });
 // GET tous les articles (public)
 router.get("/", async (req, res) => {
   const { category } = req.query;
-  const query = category
-    ? "SELECT a.*, u.name AS author FROM articles a LEFT JOIN users u ON a.author_id = u.id WHERE a.category = ? ORDER BY a.created_at DESC"
-    : "SELECT a.*, u.name AS author FROM articles a LEFT JOIN users u ON a.author_id = u.id ORDER BY a.created_at DESC";
-
-  const [rows] = await db.promise().query(query, category ? [category] : []);
-  res.json(rows);
+  const result = category
+    ? await db.query(
+        "SELECT a.*, u.name AS author FROM articles a LEFT JOIN users u ON a.author_id = u.id WHERE a.category = $1 ORDER BY a.created_at DESC",
+        [category]
+      )
+    : await db.query(
+        "SELECT a.*, u.name AS author FROM articles a LEFT JOIN users u ON a.author_id = u.id ORDER BY a.created_at DESC"
+      );
+  res.json(result.rows);
 });
 
 // GET un article par id (public)
 router.get("/:id", async (req, res) => {
-  const [rows] = await db.promise().query(
-    "SELECT a.*, u.name AS author FROM articles a LEFT JOIN users u ON a.author_id = u.id WHERE a.id = ?",
+  const result = await db.query(
+    "SELECT a.*, u.name AS author FROM articles a LEFT JOIN users u ON a.author_id = u.id WHERE a.id = $1",
     [req.params.id]
   );
-  if (rows.length === 0) return res.status(404).json({ message: "Introuvable" });
-  res.json(rows[0]);
+  if (result.rows.length === 0) return res.status(404).json({ message: "Introuvable" });
+  res.json(result.rows[0]);
 });
 
 // POST créer un article (admin)
@@ -43,8 +46,8 @@ router.post("/", verifyAdmin, upload.single("image"), async (req, res) => {
 
   const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-  await db.promise().query(
-    "INSERT INTO articles (title, content, image, category, author_id) VALUES (?, ?, ?, ?, ?)",
+  await db.query(
+    "INSERT INTO articles (title, content, image, category, author_id) VALUES ($1, $2, $3, $4, $5)",
     [title, content, image, category || "actualite", req.user.id]
   );
 
@@ -59,17 +62,17 @@ router.put("/:id", verifyAdmin, upload.single("image"), async (req, res) => {
   const fields = [];
   const values = [];
 
-  if (title) { fields.push("title = ?"); values.push(title); }
-  if (content) { fields.push("content = ?"); values.push(content); }
-  if (category) { fields.push("category = ?"); values.push(category); }
-  if (image) { fields.push("image = ?"); values.push(image); }
+  if (title)    { fields.push(`title = $${values.length + 1}`);    values.push(title); }
+  if (content)  { fields.push(`content = $${values.length + 1}`);  values.push(content); }
+  if (category) { fields.push(`category = $${values.length + 1}`); values.push(category); }
+  if (image)    { fields.push(`image = $${values.length + 1}`);    values.push(image); }
 
   if (fields.length === 0)
     return res.status(400).json({ message: "Rien à modifier" });
 
   values.push(req.params.id);
-  await db.promise().query(
-    `UPDATE articles SET ${fields.join(", ")} WHERE id = ?`,
+  await db.query(
+    `UPDATE articles SET ${fields.join(", ")} WHERE id = $${values.length}`,
     values
   );
 
@@ -78,7 +81,7 @@ router.put("/:id", verifyAdmin, upload.single("image"), async (req, res) => {
 
 // DELETE supprimer un article (admin)
 router.delete("/:id", verifyAdmin, async (req, res) => {
-  await db.promise().query("DELETE FROM articles WHERE id = ?", [req.params.id]);
+  await db.query("DELETE FROM articles WHERE id = $1", [req.params.id]);
   res.json({ message: "Article supprimé" });
 });
 
