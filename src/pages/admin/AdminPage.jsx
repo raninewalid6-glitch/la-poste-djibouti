@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import AdminDashboard from "./AdminDashboard";
-
-const API = "http://localhost:5000/api";
+import { API } from "../../config";
 
 const AdminLogin = () => {
   const { login } = useAuth();

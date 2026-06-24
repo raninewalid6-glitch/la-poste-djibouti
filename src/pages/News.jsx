@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { CalendarDays, User, Loader2 } from "lucide-react";
-
-const API = "http://localhost:5000/api";
+import { API, BASE_URL } from "../config";
 
 const News = () => {
   const [articles, setArticles] = useState([]);
@@ -75,7 +74,7 @@ const News = () => {
               >
                 {a.image ? (
                   <img
-                    src={`http://localhost:5000${a.image}`}
+                    src={`${BASE_URL}${a.image}`}
                     alt={a.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition duration-300"
                   />

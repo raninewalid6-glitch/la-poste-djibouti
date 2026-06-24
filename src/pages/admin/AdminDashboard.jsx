@@ -6,8 +6,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/images/logo.jpg";
-
-const API = "http://localhost:5000/api";
+import { API, BASE_URL } from "../../config";
 const EMPTY_FORM = { title: "", content: "", image: null };
 
 /* ─── Sidebar ─────────────────────────────────────────────────────────── */
@@ -132,7 +131,7 @@ const DashboardOverview = ({ articles, slideCount, onNavigate }) => (
             <li key={a.id} className="flex items-center gap-4 px-6 py-3.5">
               {a.image ? (
                 <img
-                  src={`http://localhost:5000${a.image}`}
+                  src={`${BASE_URL}${a.image}`}
                   alt={a.title}
                   className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
                 />
@@ -221,7 +220,7 @@ const ActualitesView = ({ articles, loading, token, onRefresh }) => {
   const handleEdit = (article) => {
     setForm({ title: article.title, content: article.content, image: null });
     setEditId(article.id);
-    setPreview(article.image ? `http://localhost:5000${article.image}` : null);
+    setPreview(article.image ? `${BASE_URL}${article.image}` : null);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -359,7 +358,7 @@ const ActualitesView = ({ articles, loading, token, onRefresh }) => {
               <li key={a.id} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition">
                 {a.image ? (
                   <img
-                    src={`http://localhost:5000${a.image}`}
+                    src={`${BASE_URL}${a.image}`}
                     alt={a.title}
                     className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
                   />
@@ -615,7 +614,7 @@ const DiaporamaView = ({ token }) => {
                   </div>
                 ) : (
                   <img
-                    src={`http://localhost:5000${s.url}`}
+                    src={`${BASE_URL}${s.url}`}
                     alt={`Slide ${i + 1}`}
                     className="w-24 h-16 rounded-xl object-cover flex-shrink-0"
                   />

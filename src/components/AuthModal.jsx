@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { X, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-
-const API = "http://localhost:5000/api";
+import { API } from "../config";
 
 const AuthModal = ({ onClose }) => {
   const { login } = useAuth();

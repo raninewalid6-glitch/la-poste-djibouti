@@ -4,7 +4,7 @@ import {
   MapPin, CalendarDays, AlertCircle, Package,
 } from "lucide-react";
 
-const API = "http://localhost:5000/api";
+import { API } from "../config";
 
 const STATUS_LABELS = {
   "DELIVERED": { label: "Livré", color: "text-green-600", bg: "bg-green-50" },

@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Package, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/images/Hero.jpg";
-
-const API = "http://localhost:5000";
+import { BASE_URL as API } from "../config";
 const INTERVAL = 10000;
 
 const DEFAULT_TITLE = "Connecter les citoyens,\nservir le pays.";
