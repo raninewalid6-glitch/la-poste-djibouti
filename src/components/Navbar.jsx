@@ -116,7 +116,7 @@ const Navbar = () => {
                 className="hidden md:flex bg-[#D4A017] hover:bg-yellow-600 transition px-5 py-3 rounded-full items-center gap-2 font-medium text-[#0B1F3A]"
               >
                 <User size={18} />
-                Connexion
+                Espace client
               </button>
             )}
 
@@ -178,7 +178,7 @@ const Navbar = () => {
                   className="mt-4 bg-[#D4A017] hover:bg-yellow-600 transition px-5 py-4 rounded-2xl flex items-center justify-center gap-2 font-medium text-[#0B1F3A]"
                 >
                   <User size={18} />
-                  Connexion
+                  Espace client
                 </button>
               )}
             </nav>

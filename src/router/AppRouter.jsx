@@ -8,7 +8,6 @@ import Services from "../pages/Services";
 import Tracking from "../pages/Tracking";
 import News from "../pages/News";
 import Contact from "../pages/Contact";
-import AdminDashboard from "../pages/admin/AdminDashboard";
 
 const AppRouter = () => {
   return (
@@ -23,7 +22,6 @@ const AppRouter = () => {
             <Route path="news" element={<News />} />
             <Route path="contact" element={<Contact />} />
           </Route>
-          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
