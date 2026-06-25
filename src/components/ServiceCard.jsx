@@ -7,7 +7,10 @@ import {
   MapPin,
   Headset,
   ArrowRight,
+  PhoneCall,
+  Bookmark,
 } from "lucide-react";
+import callcenterImg from "../assets/images/callcenter.jpeg";
 
 const services = [
   {
@@ -25,7 +28,7 @@ const services = [
   {
     icon: <Send size={26} />,
     title: "EMS",
-    description: "Livraison express nationale et internationale.",
+    description: "Livraison express internationale.",
     bg: "bg-[#D4A017]",
   },
   {
@@ -38,6 +41,18 @@ const services = [
     icon: <PackageOpen size={26} />,
     title: "Boîtes postales",
     description: "Une adresse postale sécurisée et fiable.",
+    bg: "bg-[#D4A017]",
+  },
+  {
+    icon: <PhoneCall size={26} />,
+    title: "Callposte",
+    description: "Un service téléphonique accessible dans tous nos bureaux.",
+    bg: "bg-[#0B1F3A]",
+  },
+  {
+    icon: <Bookmark size={26} />,
+    title: "Philatélie",
+    description: "Découvrez notre collection de timbres et éditions spéciales.",
     bg: "bg-[#D4A017]",
   },
 ];
@@ -63,7 +78,7 @@ const ServicesSection = () => {
         </div>
 
         {/* CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {services.map((service, index) => (
             <div
               key={index}
@@ -154,7 +169,7 @@ const ServicesSection = () => {
 
             {/* PHOTO — remplace par ton image réelle */}
             <img
-              src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=500&auto=format&fit=crop"
+              src={callcenterImg}
               alt="Agente du service client"
               className="hidden sm:block absolute right-0 bottom-0 h-full w-44 object-cover object-top"
             />

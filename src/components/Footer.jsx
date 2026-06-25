@@ -156,7 +156,7 @@ const Footer = () => {
 
                 <Phone size={20} className="text-[#D4A017]" />
 
-                <p>+253 XX XX XX XX</p>
+                <p>2020</p>
               </div>
 
               <div className="flex items-center gap-3">
