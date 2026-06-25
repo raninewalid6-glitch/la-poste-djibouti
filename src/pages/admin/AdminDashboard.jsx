@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Newspaper, PlusCircle, Trash2, Pencil, Loader2,
-  X, ImageIcon, LogOut, Home, ChevronRight, LayoutDashboard, Images, Upload, Film,
+  X, ImageIcon, LogOut, Home, ChevronRight, LayoutDashboard, Images, Upload, Film, Menu,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/images/logo.jpg";
@@ -10,64 +10,87 @@ import { API, BASE_URL } from "../../config";
 const EMPTY_FORM = { title: "", content: "", image: null };
 
 /* ─── Sidebar ─────────────────────────────────────────────────────────── */
-const Sidebar = ({ active, setActive, onLogout, user }) => {
+const Sidebar = ({ active, setActive, onLogout, user, isOpen, onClose }) => {
   const navItems = [
     { key: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
     { key: "actualites", label: "Actualités", icon: Newspaper },
     { key: "diaporama", label: "Diaporama Hero", icon: Images },
   ];
 
+  const handleNav = (key) => { setActive(key); onClose(); };
+
   return (
-    <aside className="w-64 min-h-screen bg-[#0B1F3A] flex flex-col flex-shrink-0">
-      {/* Brand */}
-      <div className="px-6 py-6 border-b border-white/10 flex items-center gap-3">
-        <img src={logo} alt="logo" className="w-10 h-10 object-contain rounded-lg" />
-        <div>
-          <p className="text-white font-bold text-sm leading-none">LA POSTE</p>
-          <p className="text-gray-400 text-xs mt-0.5">Administration</p>
-        </div>
-      </div>
+    <>
+      {/* Overlay mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      {/* Nav */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
-        {navItems.map(({ key, label, icon: Icon }) => (
-          <button
-            key={key}
-            onClick={() => setActive(key)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
-              active === key
-                ? "bg-[#D4A017] text-[#0B1F3A]"
-                : "text-gray-400 hover:bg-white/10 hover:text-white"
-            }`}
-          >
-            <Icon size={18} />
-            {label}
+      <aside className={`
+        fixed top-0 left-0 h-full w-64 bg-[#0B1F3A] flex flex-col z-40
+        transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:relative lg:translate-x-0 lg:flex-shrink-0
+      `}>
+        {/* Brand */}
+        <div className="px-6 py-6 border-b border-white/10 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="logo" className="w-10 h-10 object-contain rounded-lg" />
+            <div>
+              <p className="text-white font-bold text-sm leading-none">LA POSTE</p>
+              <p className="text-gray-400 text-xs mt-0.5">Administration</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-white">
+            <X size={20} />
           </button>
-        ))}
-      </nav>
-
-      {/* User + actions */}
-      <div className="px-4 pb-6 space-y-2 border-t border-white/10 pt-4">
-        <div className="px-4 py-3 rounded-xl bg-white/5">
-          <p className="text-white text-sm font-medium truncate">{user?.name}</p>
-          <p className="text-gray-400 text-xs truncate">{user?.email}</p>
         </div>
-        <Link
-          to="/"
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-400 hover:bg-white/10 hover:text-white transition"
-        >
-          <Home size={16} />
-          Voir le site
-        </Link>
-        <button
-          onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition"
-        >
-          <LogOut size={16} />
-          Se déconnecter
-        </button>
-      </div>
-    </aside>
+
+        {/* Nav */}
+        <nav className="flex-1 px-4 py-6 space-y-1">
+          {navItems.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => handleNav(key)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
+                active === key
+                  ? "bg-[#D4A017] text-[#0B1F3A]"
+                  : "text-gray-400 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Icon size={18} />
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        {/* User + actions */}
+        <div className="px-4 pb-6 space-y-2 border-t border-white/10 pt-4">
+          <div className="px-4 py-3 rounded-xl bg-white/5">
+            <p className="text-white text-sm font-medium truncate">{user?.name}</p>
+            <p className="text-gray-400 text-xs truncate">{user?.email}</p>
+          </div>
+          <Link
+            to="/"
+            onClick={onClose}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-400 hover:bg-white/10 hover:text-white transition"
+          >
+            <Home size={16} />
+            Voir le site
+          </Link>
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition"
+          >
+            <LogOut size={16} />
+            Se déconnecter
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 
@@ -648,9 +671,16 @@ const DiaporamaView = ({ token }) => {
 };
 
 /* ─── Page principale ─────────────────────────────────────────────────── */
+const NAV_LABELS = {
+  dashboard: "Tableau de bord",
+  actualites: "Actualités",
+  diaporama: "Diaporama Hero",
+};
+
 const AdminDashboard = () => {
   const { user, token, logout } = useAuth();
   const [active, setActive] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [articles, setArticles] = useState([]);
   const [slideCount, setSlideCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -671,37 +701,53 @@ const AdminDashboard = () => {
 
   useEffect(() => { fetchArticles(); fetchSlideCount(); }, []);
 
-  const handleLogout = () => logout();
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar
         active={active}
         setActive={setActive}
-        onLogout={handleLogout}
+        onLogout={logout}
         user={user}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="flex-1 px-8 py-10 overflow-auto">
-        {active === "dashboard" && (
-          <DashboardOverview
-            articles={articles}
-            slideCount={slideCount}
-            onNavigate={setActive}
-          />
-        )}
-        {active === "actualites" && (
-          <ActualitesView
-            articles={articles}
-            loading={loading}
-            token={token}
-            onRefresh={fetchArticles}
-          />
-        )}
-        {active === "diaporama" && (
-          <DiaporamaView token={token} />
-        )}
-      </main>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Topbar mobile */}
+        <div className="lg:hidden flex items-center gap-4 px-4 py-4 bg-white border-b border-gray-100 sticky top-0 z-20">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-[#0B1F3A] hover:bg-gray-200 transition"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="logo" className="w-7 h-7 object-contain rounded-md" />
+            <span className="font-bold text-[#0B1F3A] text-sm">{NAV_LABELS[active]}</span>
+          </div>
+        </div>
+
+        <main className="flex-1 px-4 py-6 md:px-8 md:py-10 overflow-auto">
+          {active === "dashboard" && (
+            <DashboardOverview
+              articles={articles}
+              slideCount={slideCount}
+              onNavigate={setActive}
+            />
+          )}
+          {active === "actualites" && (
+            <ActualitesView
+              articles={articles}
+              loading={loading}
+              token={token}
+              onRefresh={fetchArticles}
+            />
+          )}
+          {active === "diaporama" && (
+            <DiaporamaView token={token} />
+          )}
+        </main>
+      </div>
     </div>
   );
 };
