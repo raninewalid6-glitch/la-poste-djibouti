@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Inscription
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
 
   if (!name || !email || !password)
     return res.status(400).json({ message: "Tous les champs sont requis" });
@@ -18,8 +18,8 @@ router.post("/register", async (req, res) => {
 
   const hashed = await bcrypt.hash(password, 10);
   await db.query(
-    "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
-    [name, email, hashed]
+    "INSERT INTO users (name, email, password, phone) VALUES ($1, $2, $3, $4)",
+    [name, email, hashed, phone || null]
   );
 
   res.status(201).json({ message: "Compte créé avec succès" });

@@ -159,7 +159,7 @@ const ServicesSection = () => {
                 Besoin d'aide ?
               </h3>
               <p className="text-gray-500 text-sm mt-2 leading-relaxed">
-                Consultez notre FAQ ou contactez notre service client.
+                Consultez notre FAQ ou contactez notre service client ligne(2020).
               </p>
               <button className="mt-6 flex items-center gap-2 bg-white text-[#0B1F3A] font-semibold text-sm px-5 py-3 rounded-full shadow-sm hover:shadow-md transition">
                 Centre d'aide

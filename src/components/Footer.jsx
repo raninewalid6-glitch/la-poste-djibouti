@@ -148,7 +148,7 @@ const Footer = () => {
 
                 <p>
                   Djibouti Ville,
-                  République de Djibouti
+                  Boulevard de la République.
                 </p>
               </div>
 

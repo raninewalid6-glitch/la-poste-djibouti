@@ -10,7 +10,7 @@ const AuthModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
 
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -19,7 +19,7 @@ const AuthModal = ({ onClose }) => {
     setTab(t);
     setError("");
     setSuccess("");
-    setForm({ name: "", email: "", password: "" });
+    setForm({ name: "", email: "", password: "", phone: "" });
   };
 
   const handleSubmit = async (e) => {
@@ -33,7 +33,7 @@ const AuthModal = ({ onClose }) => {
       const body =
         tab === "login"
           ? { email: form.email, password: form.password }
-          : { name: form.name, email: form.email, password: form.password };
+          : { name: form.name, email: form.email, password: form.password, phone: form.phone };
 
       const res = await fetch(`${API}${endpoint}`, {
         method: "POST",
@@ -113,6 +113,22 @@ const AuthModal = ({ onClose }) => {
                 onChange={handleChange}
                 placeholder="Votre nom"
                 required
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A017] focus:border-transparent transition"
+              />
+            </div>
+          )}
+
+          {tab === "register" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Numéro de téléphone
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="+253 77 00 00 00"
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A017] focus:border-transparent transition"
               />
             </div>
