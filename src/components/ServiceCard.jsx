@@ -153,8 +153,15 @@ const ServicesSection = () => {
           </div>
 
           {/* HELP - light banner with photo */}
-          <div className="relative bg-[#EDEFF2] rounded-2xl p-8 overflow-hidden min-h-[220px] flex items-center justify-between">
-            <div className="relative z-10 max-w-xs">
+          <div className="relative bg-[#EDEFF2] rounded-2xl overflow-hidden min-h-[220px] flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            {/* PHOTO */}
+            <img
+              src={callcenterImg}
+              alt="Agente du service client"
+              className="order-1 sm:order-2 w-full h-40 object-cover object-top sm:absolute sm:right-0 sm:bottom-0 sm:h-full sm:w-44"
+            />
+
+            <div className="order-2 sm:order-1 relative z-10 max-w-xs p-6 sm:p-8">
               <h3 className="text-[#0B1F3A] text-lg font-bold">
                 Besoin d'aide ?
               </h3>
@@ -166,13 +173,6 @@ const ServicesSection = () => {
                 <Headset size={16} />
               </button>
             </div>
-
-            {/* PHOTO — remplace par ton image réelle */}
-            <img
-              src={callcenterImg}
-              alt="Agente du service client"
-              className="hidden sm:block absolute right-0 bottom-0 h-full w-44 object-cover object-top"
-            />
           </div>
         </div>
       </div>
